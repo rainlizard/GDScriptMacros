@@ -7,7 +7,7 @@
 [macro] example %argument0% %argument1% %argument2%
 print("This is argument0: %argument0%")
 print("This is argument2: %argument2%, this is argument1: %argument1% and so is this: %argument1%")
-				print('Tabbed line. The original line's indentation is additionally used.')
+				print("Tabbed line. The original line's indentation is additionally used.")
 [macro] ct
 var CODETIME_START = OS.get_ticks_msec()
 [macro] cte

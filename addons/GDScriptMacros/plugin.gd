@@ -23,7 +23,7 @@ func check_macro(line: int) -> void:
 	if macroStr.has(keyword):
 		# the number of arguments given must match the number of arguments as written inside macros.txt
 		if givenArgs.size() != macroArgs[keyword].size(): return
-		# negin construction of a new line
+		# begin construction of a new line
 		var constructLine = writtenLine
 		var indent = get_indentation(writtenLine)
 		constructLine = indent + macroStr[keyword]

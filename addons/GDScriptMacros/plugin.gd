@@ -92,8 +92,8 @@ func _ready():
 
 func _check_for_updates():
 	while true:
-		_init_macro_file() 
-		await get_tree().create_timer(2)
+		_init_macro_file()
+		await get_tree().create_timer(2).timeout
 	pass
 
 

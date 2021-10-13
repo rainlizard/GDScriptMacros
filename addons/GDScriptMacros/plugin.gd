@@ -1,4 +1,4 @@
-tool
+@tool
 extends EditorPlugin
 
 
@@ -46,9 +46,8 @@ func get_indentation(string: String) -> String:
 			break
 	return indentation
 
-
+var file := File.new()
 func _init_macro_file() -> void:
-	var file := File.new()
 
 	var date := file.get_modified_time(macroPath)
 	if date == macroDate:  # prevent loading macro file twice by checking date.
@@ -87,25 +86,27 @@ func _init_macro_file() -> void:
 
 
 func _ready():
-	get_viewport().connect("gui_focus_changed", self, "_on_gui_focus_changed")
+	get_viewport().gui_focus_changed.connect(_on_gui_focus_changed)
 	_init_macro_file()
+	await _check_for_updates()
+
+func _check_for_updates():
+	while true:
+		_init_macro_file()
+		await get_tree().create_timer(2).timeout
+	pass
 
 
-func _notification(what: int):
-	if what == MainLoop.NOTIFICATION_WM_FOCUS_IN:
-		_init_macro_file()  # reinit macro if user modified file
-
-
-func _on_cursor_changed():
+func _on_text_changed():
 	if is_instance_valid(script_editor):
-		if cursor_line != script_editor.cursor_get_line():
+		if cursor_line != script_editor.get_caret_line():
 			check_macro(cursor_line)
-			cursor_line = script_editor.cursor_get_line()
+			cursor_line = script_editor.get_caret_line()
 
 
 func _on_gui_focus_changed(node: Node):
 	if node is TextEdit:
 		if is_instance_valid(script_editor):
-			script_editor.disconnect("cursor_changed", self, "_on_cursor_changed")
+			script_editor.text_changed.disconnect(_on_text_changed)
 		script_editor = node
-		script_editor.connect("cursor_changed", self, "_on_cursor_changed")
+		script_editor.text_changed.connect(_on_text_changed)

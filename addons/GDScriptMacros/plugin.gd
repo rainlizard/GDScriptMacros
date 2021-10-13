@@ -12,7 +12,6 @@ var macroDate : int
 
 
 func check_macro(line: int) -> void:
-	print("checking macro: ", line)
 	var writtenLine := script_editor.get_line(line)
 
 	var keyword = writtenLine.strip_edges(true, true)
@@ -47,9 +46,8 @@ func get_indentation(string: String) -> String:
 			break
 	return indentation
 
-
+var file := File.new()
 func _init_macro_file() -> void:
-	var file := File.new()
 
 	var date := file.get_modified_time(macroPath)
 	if date == macroDate:  # prevent loading macro file twice by checking date.
@@ -90,12 +88,13 @@ func _init_macro_file() -> void:
 func _ready():
 	get_viewport().gui_focus_changed.connect(_on_gui_focus_changed)
 	_init_macro_file()
+	await _check_for_updates()
 
-
-func _notification(what: int):
-	if what == 1004: #1004 is FOCUS_IN, using the ENUM NAME doesnt work atm
-		_init_macro_file()  # reinit macro if user modified file
-		
+func _check_for_updates():
+	while true:
+		_init_macro_file() 
+		await get_tree().create_timer(2)
+	pass
 
 
 func _on_text_changed():

@@ -38,7 +38,7 @@ func check_macro(line: int) -> void:
 		
 		# Fixes a crash when macro contains a new line and you move the cursor to that new line when executing the macro
 		if constructLine.ends_with("\n"):
-			script_editor.cursor_set_line(line)
+			script_editor.cursor_set_line(line+1)
 
 
 func get_indentation(string: String) -> String:

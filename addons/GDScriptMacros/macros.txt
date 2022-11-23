@@ -1,4 +1,4 @@
-### How to use: in Godot's Script Editor write a macro and execute it by moving your caret cursor off the line. Press "right arrow key" to do this easily without having code completion interfere. Keep in mind if the macro has arguments then you need to match the same number of words for it to execute.
+### How to use: in Godot's Script Editor write a macro and execute it by moving your caret cursor off the line. Press Enter or Right-arrow-key to do this easily without having code completion interfere. Keep in mind if the macro has arguments then you need to match the same number of words for it to execute.
 ### Lines that begin with [macro] determine what you must write inside of Godot for the macro to execute (excluding the "[macro]" prefix)
 ### Subsequent lines after the [macro] line determine the resulting text that is placed upon executing the macro. This includes blank lines too.
 ### In the [macro] line, subsequent words (encased in % if you want) determine the arguments for replacement words in the resulting text. For example; if the macro is "[macro] test %argument57%" but in Godot you write "test hello", all occurences of the resulting text's %argument57% will be replaced with "hello".
@@ -9,16 +9,16 @@ print("This is argument0: %argument0%")
 print("This is argument2: %argument2%, this is argument1: %argument1% and so is this: %argument1%")
 				print("Tabbed line. The original line's indentation is additionally used.")
 [macro] ct
-var CODETIME_START = OS.get_ticks_msec()
+var CODETIME_START = Time.get_ticks_msec()
 [macro] cte
-print('Codetime: ' + str(OS.get_ticks_msec() - CODETIME_START) + 'ms')
+print('Codetime: ' + str(Time.get_ticks_msec() - CODETIME_START) + 'ms')
 [macro] create
 var scene = preload('res://scenefilename.tscn')
-var id = scene.instance()
+var id = scene.instantiate()
 id.position = Vector2(x, y)
 add_child(id)
 [macro] idle
-yield(get_tree(),'idle_frame')
+await get_tree().process_frame
 [macro] group
 for id in get_tree().get_nodes_in_group("group_name"):
 	id.variable = null

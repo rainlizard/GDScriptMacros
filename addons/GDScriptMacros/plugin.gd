@@ -1,6 +1,5 @@
-tool
+@tool
 extends EditorPlugin
-
 
 var script_editor : TextEdit
 var cursor_line = -1
@@ -38,7 +37,12 @@ func check_macro(line: int) -> void:
 		
 		# Fixes a crash when macro contains a new line and you move the cursor to that new line when executing the macro
 		if constructLine.ends_with("\n"):
-			script_editor.cursor_set_line(line+1)
+			script_editor.set_caret_line(line+1)
+		
+		# Update instantly
+		script_editor.visible = false
+		script_editor.visible = true
+		script_editor.grab_focus()
 
 
 func get_indentation(string: String) -> String:
@@ -52,14 +56,12 @@ func get_indentation(string: String) -> String:
 
 
 func _init_macro_file() -> void:
-	var file := File.new()
-
-	var date := file.get_modified_time(macroPath)
+	var date := FileAccess.get_modified_time(macroPath)
 	if date == macroDate:  # Prevent loading macro file twice by checking date
 		return
 	macroDate = date
 
-	file.open(macroPath, File.READ)
+	var file := FileAccess.open(macroPath, FileAccess.READ)
 	var keyword : String
 
 	while true:
@@ -87,29 +89,28 @@ func _init_macro_file() -> void:
 				if keyword:
 					macroStr[keyword] += line
 				break
-	file.close()
+	file = null
 
 
 func _ready():
-	get_viewport().connect("gui_focus_changed", self, "_on_gui_focus_changed")
+	get_viewport().connect("gui_focus_changed",Callable(self,"_on_gui_focus_changed"))
 	_init_macro_file()
 
-
 func _notification(what: int):
-	if what == MainLoop.NOTIFICATION_WM_FOCUS_IN:
+	if what == MainLoop.NOTIFICATION_APPLICATION_FOCUS_IN:
 		_init_macro_file()  # Reinit macro if user modified file
 
 
-func _on_cursor_changed():
+func _on_caret_changed():
 	if is_instance_valid(script_editor):
-		if cursor_line != script_editor.cursor_get_line():
+		if cursor_line != script_editor.get_caret_line():
 			check_macro(cursor_line)
-			cursor_line = script_editor.cursor_get_line()
+			cursor_line = script_editor.get_caret_line()
 
 
 func _on_gui_focus_changed(node: Node):
 	if node is TextEdit:
 		if is_instance_valid(script_editor):
-			script_editor.disconnect("cursor_changed", self, "_on_cursor_changed")
+			script_editor.disconnect("caret_changed",Callable(self,"_on_caret_changed"))
 		script_editor = node
-		script_editor.connect("cursor_changed", self, "_on_cursor_changed")
+		script_editor.connect("caret_changed",Callable(self,"_on_caret_changed"))

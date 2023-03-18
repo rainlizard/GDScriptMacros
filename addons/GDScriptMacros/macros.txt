@@ -24,3 +24,11 @@ for id in get_tree().get_nodes_in_group("group_name"):
 	id.variable = null
 [macro] link %arg1%
 onready var %arg1% = Nodelist.list["%arg1%"]
+[macro] mouse
+func _on_gui_input(event):
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
+		if event.pressed == true:
+			pass
+		else:
+			# Button released
+			pass
